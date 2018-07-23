@@ -3,7 +3,7 @@
 const config = require('config')
 const Router = require('koa-router')
 const restc = require('restc').koa2()
-const ratelimit = require('koa-ratelimit')
+const ratelimit = require('koa-ratelimit-dynamic')
 const {
   user,
   mock,
@@ -14,14 +14,29 @@ const {
 } = require('./controllers')
 const baseUtil = require('./util')
 const middleware = require('./middlewares')
-
+const redis = baseUtil.getRedis()
 const rateLimitConf = config.get('rateLimit')
 const apiRouter = new Router({ prefix: '/api' })
 const mockRouter = new Router({ prefix: '/mock' })
+
 const rate = ratelimit({
-  db: baseUtil.getRedis(),
+  db: redis,
   id: ctx => ctx.url,
-  max: rateLimitConf.max,
+  max: async function (ctx) {
+    let { projectId } = ctx.pathNode
+    const redisKey = 'project:' + projectId
+    let apis = await redis.get(redisKey)
+
+    if (apis) {
+      apis = JSON.parse(apis)
+    }
+    if (apis && apis.length > 0) {
+
+    }
+
+
+    return rateLimitConf.max
+  },
   duration: rateLimitConf.duration,
   errorMessage: 'Sometimes You Just Have to Slow Down.',
   headers: {

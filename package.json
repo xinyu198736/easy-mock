@@ -43,7 +43,7 @@
     "koa-jwt": "^3.3.0",
     "koa-onerror": "^4.0.0",
     "koa-pino-logger": "^2.1.1",
-    "koa-ratelimit": "^4.0.0",
+    "koa-ratelimit-dynamic": "^0.0.2",
     "koa-router": "^7.3.0",
     "koa-static-cache": "^5.1.1",
     "koa-validate": "^1.0.7",
